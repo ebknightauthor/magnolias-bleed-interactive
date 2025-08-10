@@ -4,22 +4,24 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>PEACH-BEARER — Dual Perspective Edition</title>
-  <!-- Preload the main cover image -->
-  <link rel="preload" as="image" href="data:image/webp;base64,UklGRhCoAABXRUJQVlA4IASoAAAQqASdASqEA6AFPpVKoEulpC2qI9KZ4bASC5OQvHq8dW2oGf6W0t1V1b5l2r0pZk1gkZ3nqTQm0Xo8c6fI8v9C8C3qv1JbB6gq8r4fL8mX6G0Q0v7o8mVv3zX6T5lN8b0iO3sS7rCRNw9zq+q0Wg8y5K2u1jKp4q0QZlCwq2C9d3j+0mVb1T1c8O2rQx0W3J0r4R6m7mSx8p8uQ2k8gJZL6A1mYw0l9b7fZxw0w9W9k0k3rKxk2zQyYwVQkH4bYh4O6yI0V2h0w8zKc6iV3P0dR0qYtq8j1kC2mJ2hGd3oWf4c6fJf2H3dH3C5uK2m6Yl3p8m7k8tG20V2w0h3b1w4P2s7Y1m0c3h2v2y2m2y2l3m3q5q5p7o7n9q/8f/8kA">
   <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+
   <style>
     :root { --veil:#0c0a09; --rose:#a11237; --rose2:#9f1239; --line:rgba(255,255,255,.12); }
     html,body { height:100% }
-    body { margin:0; background:
+    body {
+      margin:0;
+      background:
         radial-gradient(1200px 700px at 15% 0%, rgba(159,18,57,.12), transparent 60%),
         radial-gradient(900px 600px at 100% 100%, rgba(251,191,36,.08), transparent 60%),
         var(--veil);
-      color:#e7e7ea; font-family: "Cormorant Garamond", serif; }
+      color:#e7e7ea; font-family: "Cormorant Garamond", serif;
+    }
     .title-sub { font-family:"Cinzel", serif }
     .card { background:rgba(0,0,0,.45); border:1px solid var(--line); border-radius:16px; box-shadow: 0 10px 30px rgba(0,0,0,.5) }
     .choice-button { transition:all .3s ease; border:1px solid rgba(220,38,38,.35); background:rgba(10,10,12,.6) }
@@ -33,47 +35,99 @@
     .community-badge, .achievement-toast { transition: opacity .5s ease-in-out, transform .5s ease-in-out; }
     @keyframes fadeIn { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform:none; } }
     .fade-in { animation: fadeIn 900ms ease both; }
+
+    /* Vignette Style */
+    .character-vignette {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      width: 120px;
+      height: 180px;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+      pointer-events: none; /* So it doesn't block clicks */
+    }
+    .character-vignette svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 20px rgba(220, 38, 38, 0.15));
+    }
+
+    /* Hero effects */
+    .hero-glow::before,
+    .hero-glow::after{
+      content:""; position:absolute; inset:auto; border-radius:9999px; filter:blur(60px); pointer-events:none;
+    }
+    .hero-glow::before{ width:22rem; height:22rem; top:-7rem; left:-6rem; background:#9f1239; opacity:.22; }
+    .hero-glow::after{ width:26rem; height:26rem; bottom:-8rem; right:-7rem; background:#f59e0b; opacity:.13; }
+    .spark { background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent); height:1px; width:180px; margin:0 auto 1.25rem auto; }
   </style>
 </head>
 <body class="min-h-screen p-4 flex items-center justify-center">
 
   <div id="game" class="relative w-full max-w-3xl mx-auto rounded-xl overflow-hidden">
-    <!-- Intro -->
-    <section id="intro" class="hidden card p-8 md:p-12 text-center fade" aria-labelledby="introTitle">
-      <h1 id="introTitle" class="text-4xl md:text-6xl text-white mb-2 title-sub">PEACH-BEARER</h1>
-      <p class="text-lg md:text-xl text-rose-200 mb-6 italic">Dual Perspective Edition</p>
-      <figure class="max-w-xl mx-auto mb-6 overflow-hidden rounded-lg border border-white/10 shadow">
-        <img src="data:image/webp;base64,UklGRhCoAABXRUJQVlA4IASoAAAQqASdASqEA6AFPpVKoEulpC2qI9KZ4bASC5OQvHq8dW2oGf6W0t1V1b5l2r0pZk1gkZ3nqTQm0Xo8c6fI8v9C8C3qv1JbB6gq8r4fL8mX6G0Q0v7o8mVv3zX6T5lN8b0iO3sS7rCRNw9zq+q0Wg8y5K2u1jKp4q0QZlCwq2C9d3j+0mVb1T1c8O2rQx0W3J0r4R6m7mSx8p8uQ2k8gJZL6A1mYw0l9b7fZxw0w9W9k0k3rKxk2zQyYwVQkH4bYh4O6yI0V2h0w8zKc6iV3P0dR0qYtq8j1kC2mJ2hGd3oWf4c6fJf2H3dH3C5uK2m6Yl3p8m7k8tG20V2w0h3b1w4P2s7Y1m0c3h2v2y2m2y2l3m3q5q5p7o7n9q/8f/8kA" alt="Peach-Bearer: Magnolias Bleed cover art, a halved peach bleeding over magnolia blooms" class="w-full h-auto block" />
-      </figure>
+    <!-- Intro (no image; animated hero header) -->
+    <section id="intro" class="hidden card p-8 md:p-12 text-center fade relative overflow-hidden hero-glow" aria-labelledby="introTitle">
+      <h1 id="introTitle" class="text-4xl md:text-6xl text-white mb-2 title-sub tracking-wide">PEACH-BEARER</h1>
+      <p class="text-lg md:text-xl text-rose-200 mb-4 italic">Dual Perspective Edition</p>
+
+      <!-- author + tiktok -->
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-4">
+        <span class="pill bg-neutral-900/60">By E.B. Knight</span>
+        <a href="https://www.tiktok.com/@ebknightwrites?_t=ZP-8ylnc7CYEL1&_r=1" target="_blank" rel="noopener noreferrer"
+           class="pill bg-neutral-900/60 hover:bg-neutral-800 flex items-center gap-2">
+          <!-- TikTok icon -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M16 8.04a6.4 6.4 0 0 0 4 1.38V12a8.9 8.9 0 0 1-4-1.02V16.5a6.5 6.5 0 1 1-6.5-6.5c.23 0 .46.01.69.04V12a3.9 3.9 0 1 0 3.9 3.9V3h3.91A6.38 6.38 0 0 0 16 8.04Z"/>
+          </svg>
+          @ebknightwrites
+        </a>
+      </div>
+
+      <div class="spark"></div>
+
+      <!-- tags -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
+        <span class="pill bg-neutral-900/60">Dark Interracial Supernatural Gothic Romance</span>
+        <span class="pill bg-neutral-900/60">Dual POV • Interactive</span>
+        <span class="pill bg-neutral-900/60">10–15 min</span>
+      </div>
+
+      <!-- prologue -->
       <div id="prologue" class="max-w-xl mx-auto opacity-90 mb-8 text-left leading-relaxed fade-in text-base">
         <p><em>They say no code can bury a prophecy written in blood. I have seen the way it stirs beneath the skin, ancient and restless. Two souls move toward each other now, pulled by a gravity older than memory: Mina Sever, who carries the weight of every rebellion her blood remembers, and Malachi King, who hides from his own hunger in circuits and shadows.</em></p>
         <p class="mt-3"><em>When their worlds touch, something wakes. A myth breathes again in the marrow. Here in this Southern city, where folklore tangles with the neon hum of the future, longing and danger are never far apart. Prophecies rise, old orders crumble, and love must decide if it can survive revelation.</em></p>
         <p class="mt-3"><em>Step carefully. Every choice you make bends the path between bondage and freedom, flesh and code, myth and the making of something entirely new.</em></p>
       </div>
+
+      <!-- CTAs -->
       <div class="flex flex-wrap items-center justify-center gap-3">
         <button id="btnNew" class="choice-button text-white font-bold py-3 px-8 rounded-lg text-lg" aria-label="Begin the story">Begin</button>
-        <a id="introSubredditLink" href="https://www.reddit.com/r/PlusSizeDarkRomance1/" target="_blank" rel="noopener noreferrer" class="pill bg-neutral-900/60 hover:bg-neutral-800" aria-label="Visit the NSFW subreddit community">NSFW community: r/PlusSizeDarkRomance1</a>
+        <a id="introSubredditLink" href="https://www.reddit.com/r/PlusSizeDarkRomance1/" target="_blank" rel="noopener noreferrer" class="pill bg-neutral-900/60 hover:bg-neutral-800">NSFW community: r/PlusSizeDarkRomance1</a>
+        <a id="introTikTokLink" href="https://www.tiktok.com/@ebknightwrites?_t=ZP-8ylnc7CYEL1&_r=1" target="_blank" rel="noopener noreferrer" class="pill bg-neutral-900/60 hover:bg-neutral-800">TikTok: @ebknightwrites</a>
       </div>
     </section>
 
     <!-- Character Select -->
     <section id="characterSelect" class="hidden card p-8 md:p-12 text-center fade" aria-labelledby="charTitle">
-        <h2 id="charTitle" class="text-3xl md:text-4xl text-white mb-4 title-sub">Choose Your Perspective</h2>
-        <p class="max-w-xl mx-auto opacity-90 mb-8">Whose story will you uncover?</p>
-        <div class="grid md:grid-cols-2 gap-6">
-            <button id="btnMina" class="choice-button text-white font-bold p-6 rounded-lg text-lg flex flex-col items-center" aria-label="Play as Mina Sever">
-                <span class="text-2xl mb-2">Mina Sever</span>
-                <span class="text-sm font-normal opacity-80">The Oath, the City, the Choice.</span>
-            </button>
-            <button id="btnMalachi" class="choice-button text-white font-bold p-6 rounded-lg text-lg flex flex-col items-center" aria-label="Play as Malachi King">
-                <span class="text-2xl mb-2">Malachi King</span>
-                <span class="text-sm font-normal opacity-80">The Name, the Power, the Woman.</span>
-            </button>
-        </div>
+      <h2 id="charTitle" class="text-3xl md:text-4xl text-white mb-4 title-sub">Choose Your Perspective</h2>
+      <p class="max-w-xl mx-auto opacity-90 mb-8">Whose story will you uncover?</p>
+      <div class="grid md:grid-cols-2 gap-6">
+        <button id="btnMina" class="choice-button text-white font-bold p-6 rounded-lg text-lg flex flex-col items-center" aria-label="Play as Mina Sever">
+          <span class="text-2xl mb-2">Mina "Peach" Sever</span>
+          <span class="text-sm font-normal opacity-80">The Oath, the City, the Choice.</span>
+        </button>
+        <button id="btnMalachi" class="choice-button text-white font-bold p-6 rounded-lg text-lg flex flex-col items-center" aria-label="Play as Malachi King">
+          <span class="text-2xl mb-2">Malachi "Ape" King</span>
+          <span class="text-sm font-normal opacity-80">The Name, the Power, The King.</span>
+        </button>
+      </div>
     </section>
 
     <!-- Content -->
     <section id="play" class="hidden card p-8 md:p-12 relative fade" aria-live="polite" aria-labelledby="storyTitle">
+      <div id="characterVignette" class="character-vignette"></div>
       <div id="communityBadge" class="community-badge absolute top-4 left-4 bg-rose-800/80 text-white text-xs font-bold px-3 py-1 rounded-full title-sub tracking-wider opacity-0">COMMUNITY</div>
       <div id="partIndicator" class="absolute top-4 right-4 bg-neutral-800/80 text-white text-xs font-bold px-3 py-1 rounded-full title-sub tracking-wider"></div>
       <div class="absolute -top-3 right-0 left-0 flex justify-end pr-2 gap-2">
@@ -87,19 +141,22 @@
 
     <!-- End Screen -->
     <section id="endScreen" class="hidden card p-8 md:p-12 text-center fade" aria-labelledby="endTitle">
-        <h2 id="endTitle" class="text-3xl md:text-4xl text-white mb-4 title-sub"></h2>
-        <p id="endText" class="max-w-xl mx-auto opacity-90 mb-8 text-lg"></p>
-        <div class="final-cta">
-            <a href="http://books.apple.com/us/book/id6749192930" target="_blank" rel="noopener noreferrer" class="inline-block choice-button text-white font-bold py-4 px-10 rounded-lg text-xl">
-                Read the Full Story on Apple Books
-            </a>
+      <h2 id="endTitle" class="text-3xl md:text-4xl text-white mb-4 title-sub"></h2>
+      <p id="endText" class="max-w-xl mx-auto opacity-90 mb-8 text-lg"></p>
+      <div class="final-cta">
+        <a href="http://books.apple.com/us/book/id6749192930" target="_blank" rel="noopener noreferrer" class="inline-block choice-button text-white font-bold py-4 px-10 rounded-lg text-xl">
+          Read the Full Story on Apple Books
+        </a>
+      </div>
+      <div id="endSubredditBox" class="mt-6 text-left mx-auto max-w-xl p-4 rounded-lg border border-white/10 bg-neutral-900/50">
+        <h3 class="title-sub text-xl mb-1">Join the Community</h3>
+        <p class="text-sm opacity-90 mb-3">Discuss the story, share theories, and find more dark romance on the NSFW subreddit, or follow the author on TikTok for updates and behind-the-scenes content.</p>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://www.reddit.com/r/PlusSizeDarkRomance1/" target="_blank" rel="noopener noreferrer" class="pill inline-block bg-neutral-900/60 hover:bg-neutral-800">r/PlusSizeDarkRomance1</a>
+          <a href="https://www.tiktok.com/@ebknightwrites?_t=ZP-8ylnc7CYEL1&_r=1" target="_blank" rel="noopener noreferrer" class="pill inline-block bg-neutral-900/60 hover:bg-neutral-800">Author on TikTok: @ebknightwrites</a>
         </div>
-        <div id="endSubredditBox" class="mt-6 text-left mx-auto max-w-xl p-4 rounded-lg border border-white/10 bg-neutral-900/50">
-          <h3 class="title-sub text-xl mb-1">Join the NSFW subreddit community</h3>
-          <p class="text-sm opacity-90 mb-3">r/PlusSizeDarkRomance1 is a space for readers, writers, and lurkers who crave dark romance with plus-size main characters. Expect recs, author promos with flair, spicy art, and talk of possessive antiheroes and morally gray lovers.</p>
-          <a href="https://www.reddit.com/r/PlusSizeDarkRomance1/" target="_blank" rel="noopener noreferrer" class="pill inline-block bg-neutral-900/60 hover:bg-neutral-800">Visit r/PlusSizeDarkRomance1</a>
-        </div>
-         <button id="btnRestart" class="mt-6 bg-neutral-900/80 hover:bg-neutral-800 text-white font-bold py-2 px-6 rounded-lg text-md border border-white/10">Play Again</button>
+      </div>
+      <button id="btnRestart" class="mt-6 bg-neutral-900/80 hover:bg-neutral-800 text-white font-bold py-2 px-6 rounded-lg text-md border border-white/10">Play Again</button>
     </section>
   </div>
 
@@ -121,12 +178,12 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Achievement Toast -->
   <div id="achievementToast" class="achievement-toast fixed bottom-5 right-5 bg-neutral-800 border border-amber-400/50 text-white p-4 rounded-lg shadow-lg opacity-0 transform translate-y-3 pointer-events-none">
     <div class="flex items-center">
       <div class="text-amber-400 mr-3">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15s-2 6-6 6-6-6-6-6"/><path d="M12 15V3"/><path d="m5 8 7 7 7-7"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15s-2 6-6 6-6-6-6-6"/><path d="M12 15V3"/><path d="m5 8 7 7 7-7"/></svg>
       </div>
       <div>
         <h3 class="font-bold title-sub">Perspectives Unlocked!</h3>
@@ -137,14 +194,20 @@
 
   <script>
     const EL = (id) => document.getElementById(id);
-    const SAVE_KEY_PREFIX = "pb_dual_perspective_v3"; // Updated key for new story
+    const SAVE_KEY_PREFIX = "pb_dual_perspective_v4"; // Incremented version to avoid save conflicts
+
+    // SVG Vignettes for characters
+    const VIGNETTES = {
+      mina: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0.5" y1="0" x2="0.5" y2="1"><stop stop-color="#e7e7ea" offset="0%"/><stop stop-color="#e7e7ea" stop-opacity="0" offset="100%"/></linearGradient></defs><path d="M 60,145 C 40,130 35,110 38,90 S 45,60 55,50 S 70,35 72,20 S 70,5 65,2 M 72,20 C 75,30 80,45 82,60 S 85,90 80,110 S 70,135 60,145" fill="none" stroke="url(#g)" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+      malachi: `<svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g2" x1="0.5" y1="0" x2="0.5" y2="1"><stop stop-color="#e7e7ea" offset="0%"/><stop stop-color="#e7e7ea" stop-opacity="0" offset="100%"/></linearGradient></defs><path d="M 40,148 C 60,135 65,115 62,95 S 55,65 45,55 S 30,40 28,25 S 30,10 35,7 M 28,25 C 25,35 20,50 18,65 S 15,95 20,115 S 30,140 40,148" fill="none" stroke="url(#g2)" stroke-width="1.5" stroke-linecap="round"/></svg>`
+    };
 
     const CANON = {
       people: ["Mina Sever","Malachi King","Mama Sage","Commissioner Vasquez", "Niko Sever"],
       places: ["Portico Nine","Project Cotton Bloom", "The Conservatory", "Riverpoint Estate", "Kranj"],
       quotes: {
-          mina: ["A King's heart is a gilded cage, child.", "The magnolias remember what the city pretends to forget.", "Every leash transmits data both ways."],
-          malachi: ["Power is a current, not a crown.", "Some debts are paid in blood, others in loyalty.", "Scarcity will starve on her Balkan flesh."]
+        mina: ["A King's heart is a gilded cage, child.", "The magnolias remember what the city pretends to forget.", "Every leash transmits data both ways."],
+        malachi: ["Power is a current, not a crown.", "Some debts are paid in blood, others in loyalty.", "Scarcity will starve on her Balkan flesh."]
       },
       protagonist:"Mina Sever",
       interest:"Malachi King",
@@ -152,7 +215,7 @@
       antagonist:"Commissioner Vasquez",
     };
 
-    let gameState = { character: null, currentNode: null };
+    let gameState = { character: null, currentNode: null, stats: { defiance: 0 } };
 
     // UI Elements
     const intro = EL("intro"), play = EL("play"), characterSelect = EL("characterSelect"), endScreen = EL("endScreen");
@@ -161,221 +224,228 @@
     const gate = EL("gate"), consent = EL("consent"), spice = EL("spice"), spiceLabel = EL("spiceLabel"), btnSettings = EL("btnSettings"), gateEnter = EL("gateEnter");
     const introSubredditLink = EL("introSubredditLink"), endSubredditBox = EL("endSubredditBox");
     const partIndicator = EL("partIndicator");
+    const vignetteContainer = EL('characterVignette');
 
     const getSpice = () => Number(localStorage.getItem(`${SAVE_KEY_PREFIX}_spice`) || 1);
     const labelForSpice = (v) => ["Soft","Warm","Hot"][Number(v)||1];
 
     function makeStory(character) {
-        const N = CANON;
-        if (character === 'mina') {
-            return {
-                // PART I: ROOTS & DEBTS
-                start: { 
-                    part: "Part I: Roots & Debts",
-                    text: `The summons arrives not as a letter, but as a ghost. A scent of peaches and iron in your small Kranj flat. Your brother, Niko, has defaulted on a debt, and the collateral clause has been triggered. You are the collateral. You are being delivered to a mansion in America.`,
-                    choices: [ 
-                        { text: `Fight. Refuse to go.`, node: "part1_refuse" }, 
-                        { text: `Go. To save your brother.`, node: "part1_go" } 
-                    ] 
-                },
-                part1_refuse: {
-                    part: "Part I: Roots & Debts",
-                    text: `You burn the papers. But the prophecy doesn't need your permission. Two men arrive. They don't speak. They simply escort you to a waiting car. Your choice was an illusion.`,
-                    choices: [ { text: `You arrive at the mansion.`, node: "part1_arrive" } ]
-                },
-                part1_go: { 
-                    part: "Part I: Roots & Debts",
-                    text: `You pack a single bag, your heart a cold stone in your chest. The flight is a blur. You arrive at a mansion built on blood-soaked cotton and humming servers. This is your cage.`, 
-                    choices: [ { text: `You are brought before him.`, node: "part1_arrive" } ] 
-                },
-                part1_arrive: {
-                    part: "Part I: Roots & Debts",
-                    text: `He stands in the grand foyer. Malachi King. Taller than you imagined. "Welcome home, Peach," he says, his voice layered with the hum of servers and the whisper of cotton fields.`,
-                    choices: [
-                        { text: `"I am not your Peach."`, node: "part2_defy" },
-                        { text: `Say nothing. Endure.`, node: "part2_endure" }
-                    ]
-                },
-                // PART II: THE CLAIMING
-                part2_defy: {
-                    part: "Part II: The Claiming",
-                    text: `A slow, dangerous smile. "You are whatever the contract says you are. And the contract is 150 years old." He gestures, and holographic displays fill the air, showing Gullah prophecies and your own genetic markers. "Your body will become an altar."`,
-                    choices: [
-                        { text: "This is madness.", node: "part2_madness" },
-                        { text: "What do you want from me?", node: "part2_what_want" }
-                    ]
-                },
-                part2_endure: {
-                    part: "Part II: The Claiming",
-                    text: `Your silence is a different kind of defiance. He studies you. "The field is hungry," he says. "And you, Mina Sever, are the feast. Your body will bloom in ways you cannot imagine. You will become a weapon."`,
-                    choices: [
-                        { text: "A weapon against who?", node: "part2_what_want" },
-                        { text: "You're insane.", node: "part2_madness" }
-                    ]
-                },
-                part2_madness: {
-                    part: "Part II: The Claiming",
-                    text: `He laughs. "Is it madness to answer a call that has echoed through your bloodline for generations? The binding is real. The power is real. And soon, so will be your transformation."`,
-                    choices: [
-                        { text: "Accept this fate.", node: "part3_accept" },
-                        { text: "Find a way to fight.", node: "part3_fight" }
-                    ]
-                },
-                part2_what_want: {
-                    part: "Part II: The Claiming",
-                    text: `His expression turns serious. "I want to awaken the power sleeping in this land. A power that men like Commissioner Vasquez want to control or destroy. Your body is the catalyst. You will help me protect it, and in doing so, you will discover a power you never knew you possessed."`,
-                    choices: [
-                        { text: "I will be your weapon.", node: "part3_accept" },
-                        { text: "I will find my own power.", node: "part3_fight" }
-                    ]
-                },
-                // PART III: TRANSFORMATION
-                part3_accept: {
-                    part: "Part III: Transformation",
-                    text: `You begin to lean into the transformation. The changes to your body are terrifying, but they bring a strange new power. You feel the house responding to your moods, the cotton in the conservatory blooming when you are near. You are becoming something more than human.`,
-                    choices: [
-                        { text: "Embrace him as your partner.", node: "end_happy" },
-                        { text: "Use your new power to escape.", node: "end_mina_escape" }
-                    ]
-                },
-                part3_fight: {
-                    part: "Part III: Transformation",
-                    text: `You resist. You search for weaknesses in his digital empire, a way to contact the outside world. You find a sympathetic ear in Commissioner Vasquez, who sees you as a victim to be rescued. You begin feeding her information, a dangerous double game.`,
-                    choices: [
-                        { text: "Betray him completely.", node: "end_mina_betray" },
-                        { text: "Have a change of heart.", node: "end_happy" }
-                    ]
-                },
-                // ENDINGS
-                end_happy: {
-                    title: "Epilogue: Blood Magnolias",
-                    text: "You chose him. Together, you weather the storm. The empire falls, but something new rises from its ashes. In a quiet corner of the South Carolina Low Country, your child is born, a bridge between worlds. You have found a love that transcends captivity, and a power that will reshape the future.",
-                    isEnd: true
-                },
-                end_mina_betray: {
-                    title: "The Gilded Cage",
-                    text: `Your betrayal is absolute. With the information you provide, Commissioner Vasquez raids the mansion. Malachi is arrested, his empire dismantled. The world sees you as a victim, rescued from a monster. But as you testify against him, you learn Niko died of an overdose weeks ago, his life the price of your 'freedom'. You are safe, but you are alone, haunted by the ghost of a power you chose to destroy.`,
-                    isEnd: true
-                },
-                end_mina_escape: {
-                    title: "The Lone Goddess",
-                    text: `You master the supernatural forces blooming within you. You don't need Malachi or Vasquez. You are a power unto yourself. You destroy the mansion's servers, escape into the world, and disappear. You are a goddess without a worshipper, a queen without a kingdom, forever hunted by those who fear what you've become.`,
-                    isEnd: true
-                }
-            };
-        } else if (character === 'malachi') {
-            return {
-                // PART I: ROOTS & DEBTS
-                start: { 
-                    part: "Part I: Roots & Debts",
-                    text: `For seventeen years, you have fed your empire—and your obsession—with data scraped from one woman. Now, the prophecy awakens. The collateral clause is triggered. The Peach-Bearer is finally being delivered to your door.`, 
-                    choices: [ 
-                        { text: `Prepare the mansion for her arrival.`, node: "part1_prepare" }, 
-                        { text: `Review the final surveillance data.`, node: "part1_review" } 
-                    ] 
-                },
-                part1_review: {
-                    part: "Part I: Roots & Debts",
-                    text: `You watch the final feeds from her Kranj flat. Her fear, her defiance, her scent... it's all data, and it's all perfect. The Gullah binding from 1858 is resonating with her genetic markers. She is ripe. The field is hungry.`,
-                    choices: [ { text: "She is on her way.", node: "part1_prepare" } ]
-                },
-                part1_prepare: {
-                    part: "Part I: Roots & Debts",
-                    text: `The mansion hums to life. Servers spin, environmental controls adjust to mimic a Low Country summer, and the dormant cotton plants in the conservatory stir. Everything is ready for the claiming. Everything is ready for Project Cotton Bloom.`,
-                    choices: [ { text: `She arrives.`, node: "part2_arrive" } ]
-                },
-                // PART II: THE CLAIMING
-                part2_arrive: {
-                    part: "Part II: The Claiming",
-                    text: `She stands before you in the foyer. More magnificent in person than any data point could capture. Her fear is a perfume. Her defiance, an aphrodisiac. "Welcome home, Peach," you say.`,
-                    choices: [
-                        { text: `She defies you. "I am not your Peach."`, node: "part2_defies" },
-                        { text: `She is silent. A challenge in itself.`, node: "part2_is_silent" }
-                    ]
-                },
-                part2_defies: {
-                    part: "Part II: The Claiming",
-                    text: `Her fire is exactly what the prophecy requires. "You are whatever the contract says you are," you tell her. "Your body will become an altar for Project Cotton Bloom." You must decide how to handle her defiance.`,
-                    choices: [
-                        { text: "Explain the stakes. Try to win her over.", node: "part3_explain" },
-                        { text: "Assert your control. Break her will.", node: "part3_assert_control" }
-                    ]
-                },
-                part2_is_silent: {
-                    part: "Part II: The Claiming",
-                    text: `You let her silence hang in the air. "The field is hungry," you say. "And you, Mina Sever, are the feast. Your body will bloom in ways you cannot imagine." You must choose your next move.`,
-                    choices: [
-                        { text: "Reveal the true mission. Make her an ally.", node: "part3_explain" },
-                        { text: "Begin the indoctrination. She is a vessel.", node: "part3_assert_control" }
-                    ]
-                },
-                // PART III: TRANSFORMATION
-                part3_explain: {
-                    part: "Part III: Transformation",
-                    text: `You reveal the true threat: Commissioner Vasquez, who sees your power as a threat to be neutralized. You position yourself not as a captor, but as a protector. You offer Mina a partnership. Her reaction is uncertain, but she seems to be listening.`,
-                    choices: [
-                        { text: "Trust her. Give her more autonomy.", node: "end_happy" },
-                        { text: "Your obsession makes you careless. You miss Vasquez's real threat.", node: "end_malachi_exposed" }
-                    ]
-                },
-                part3_assert_control: {
-                    part: "Part III: Transformation",
-                    text: `You let the mask of the CEO drop, revealing the predator. You use the mansion's systems to begin her indoctrination, a psychological campaign to break her will and reshape her into the perfect vessel. She fights you at every turn, a beautiful, caged animal.`,
-                    choices: [
-                        { text: "Your cruelty pushes her away, into Vasquez's arms.", node: "end_malachi_exposed" },
-                        { text: "Your absolute control works. She breaks, and you remake her.", node: "end_malachi_vessel" }
-                    ]
-                },
-                 // ENDINGS
-                end_happy: {
-                    title: "Epilogue: Blood Magnolias",
-                    text: "You chose her. Together, you weather the storm. The empire falls, but something new rises from its ashes. In a quiet corner of the South Carolina Low Country, your child is born, a bridge between worlds. You have found a love that transcends captivity, and a power that will reshape the future.",
-                    isEnd: true
-                },
-                end_malachi_exposed: { 
-                    title: "Empire of Ash",
-                    text: "Your obsession with Mina makes you careless. Whether through her betrayal or your own arrogance, you underestimate Commissioner Vasquez. She gathers enough evidence to expose Project Cotton Bloom to the world. Your empire collapses, and you are branded a monster—the man who kidnapped a 'fat white woman' to be his 'milk dairy cow and breeding vessel'. You lose everything.", 
-                    isEnd: true 
-                },
-                end_malachi_vessel: { 
-                    title: "The Bitter Harvest",
-                    text: "You succeed. Mina's will is broken, and she becomes the perfect, docile vessel for the prophecy. The transformation is a success, and the power you unlock is immense. But the woman you were obsessed with is gone, replaced by an empty shell. You have your goddess, but you have lost her soul. You are a king alone on a throne of empty victory.", 
-                    isEnd: true 
-                }
-            };
-        }
+      const happyEnding = {
+        title: "Epilogue: Blood Magnolias",
+        text: "You chose him. Together, you weather the storm. The empire falls, but something new rises from its ashes. In a quiet corner of the South Carolina Low Country, your child is born, a bridge between worlds. You have found a love that transcends captivity, and a power that will reshape the future.",
+        isEnd: true
+      };
+
+      if (character === 'mina') {
+        return {
+          start: { 
+            part: "Part I: Roots & Debts",
+            text: `The summons arrives not as a letter, but as a ghost. A scent of peaches and iron in your small Kranj flat. Your brother, Niko, has defaulted on a debt, and the collateral clause has been triggered. You are the collateral. You are being delivered to a mansion in America.`,
+            choices: [ 
+              { text: `Fight. Refuse to go.`, node: "part1_refuse", setStats: { defiance: "+1" } }, 
+              { text: `Go. To save your brother.`, node: "part1_go", setStats: { defiance: "-1" } } 
+            ] 
+          },
+          part1_refuse: {
+            part: "Part I: Roots & Debts",
+            text: `You burn the papers. But the prophecy doesn't need your permission. Two men arrive. They don't speak. They simply escort you to a waiting car. Your choice was an illusion.`,
+            choices: [ { text: `You arrive at the mansion.`, node: "part1_arrive" } ]
+          },
+          part1_go: { 
+            part: "Part I: Roots & Debts",
+            text: `You pack a single bag, your heart a cold stone in your chest. The flight is a blur. You arrive at a mansion built on blood-soaked cotton and humming servers. This is your cage.`, 
+            choices: [ { text: `You are brought before him.`, node: "part1_arrive" } ] 
+          },
+          part1_arrive: {
+            part: "Part I: Roots & Debts",
+            text: (stats) => stats.defiance > 0 
+              ? `He stands in the grand foyer. Malachi King. Taller than you imagined. He seems to sense the fire in you. "Welcome home, Peach," he says, his voice layered with the hum of servers and the whisper of cotton fields.`
+              : `He stands in the grand foyer. Malachi King. Taller than you imagined. He seems to sense your compliance. "Welcome home, Peach," he says, his voice layered with the hum of servers and the whisper of cotton fields.`,
+            choices: [
+              { text: `"I am not your Peach."`, node: "part2_defy", setStats: { defiance: "+2" } },
+              { text: `Say nothing. Endure.`, node: "part2_endure", setStats: { defiance: "-1" } }
+            ]
+          },
+          part2_defy: {
+            part: "Part II: The Claiming",
+            text: `A slow, dangerous smile. "You are whatever the contract says you are. And the contract is 150 years old." He gestures, and holographic displays fill the air, showing Gullah prophecies and your own genetic markers. "Your body will become an altar."`,
+            choices: [
+              { text: "This is madness.", node: "part2_madness" },
+              { text: "What do you want from me?", node: "part2_what_want" }
+            ]
+          },
+          part2_endure: {
+            part: "Part II: The Claiming",
+            text: `Your silence is a different kind of defiance. He studies you. "The field is hungry," he says. "And you, Mina Sever, are the feast. Your body will bloom in ways you cannot imagine. You will become a weapon."`,
+            choices: [
+              { text: "A weapon against who?", node: "part2_what_want" },
+              { text: "You're insane.", node: "part2_madness" }
+            ]
+          },
+          part2_madness: {
+            part: "Part II: The Claiming",
+            text: `He laughs. "Is it madness to answer a call that has echoed through your bloodline for generations? The binding is real. The power is real. And soon, so will be your transformation."`,
+            choices: [
+              { text: "Accept this fate.", node: "part3_accept", setStats: { defiance: "-2" } },
+              { text: "Find a way to fight.", node: "part3_fight", setStats: { defiance: "+1" } }
+            ]
+          },
+          part2_what_want: {
+            part: "Part II: The Claiming",
+            text: `His expression turns serious. "I want to awaken the power sleeping in this land. A power that men like Commissioner Vasquez want to control or destroy. Your body is the catalyst. You will help me protect it, and in doing so, you will discover a power you never knew you possessed."`,
+            choices: [
+              { text: "I will be your weapon.", node: "part3_accept", setStats: { defiance: "-1" } },
+              { text: "I will find my own power.", node: "part3_fight", setStats: { defiance: "+2" } }
+            ]
+          },
+          part3_accept: {
+            part: "Part III: Transformation",
+            text: `You begin to lean into the transformation. The changes to your body are terrifying, but they bring a strange new power. You feel the house responding to your moods, the cotton in the conservatory blooming when you are near. You are becoming something more than human.`,
+            choices: [
+              { text: "Embrace him as your partner.", node: "end_happy" },
+              { text: "Use your new power to escape.", node: "end_mina_escape" }
+            ]
+          },
+          part3_fight: {
+            part: "Part III: Transformation",
+            text: (stats) => stats.defiance > 2
+              ? `Your defiance gives you strength. You resist. You search for weaknesses in his digital empire, a way to contact the outside world. You find a sympathetic ear in Commissioner Vasquez, who sees your fire as a tool. You begin feeding her information, a dangerous double game.`
+              : `You resist. You search for weaknesses in his digital empire, a way to contact the outside world. You find a sympathetic ear in Commissioner Vasquez, who sees you as a victim to be rescued. You begin feeding her information, a dangerous double game.`,
+            choices: [
+              { text: "Betray him completely.", node: "end_mina_betray" },
+              { text: "Have a change of heart.", node: "end_happy" }
+            ]
+          },
+          end_happy: happyEnding,
+          end_mina_betray: {
+            title: "The Gilded Cage",
+            text: `Your betrayal is absolute. With the information you provide, Commissioner Vasquez raids the mansion. Malachi is arrested, his empire dismantled. The world sees you as a victim, rescued from a monster. But as you testify against him, you learn Niko died of an overdose weeks ago, his life the price of your 'freedom'. You are safe, but you are alone, haunted by the ghost of a power you chose to destroy.`,
+            isEnd: true
+          },
+          end_mina_escape: {
+            title: "The Lone Goddess",
+            text: `You master the supernatural forces blooming within you. You don't need Malachi or Vasquez. You are a power unto yourself. You destroy the mansion's servers, escape into the world, and disappear. You are a goddess without a worshipper, a queen without a kingdom, forever hunted by those who fear what you've become.`,
+            isEnd: true
+          }
+        };
+      } else if (character === 'malachi') {
+        return {
+          start: { 
+            part: "Part I: Roots & Debts",
+            text: `For seventeen years, you have fed your empire—and your obsession—with data scraped from one woman. Now, the prophecy awakens. The collateral clause is triggered. The Peach-Bearer is finally being delivered to your door.`, 
+            choices: [ 
+              { text: `Prepare the mansion for her arrival.`, node: "part1_prepare" }, 
+              { text: `Review the final surveillance data.`, node: "part1_review" } 
+            ] 
+          },
+          part1_review: {
+            part: "Part I: Roots & Debts",
+            text: `You watch the final feeds from her Kranj flat. Her fear, her defiance, her scent... it's all data, and it's all perfect. The Gullah binding from 1858 is resonating with her genetic markers. She is ripe. The field is hungry.`,
+            choices: [ { text: "She is on her way.", node: "part1_prepare" } ]
+          },
+          part1_prepare: {
+            part: "Part I: Roots & Debts",
+            text: `The mansion hums to life. Servers spin, environmental controls adjust to mimic a Low Country summer, and the dormant cotton plants in the conservatory stir. Everything is ready for the claiming. Everything is ready for Project Cotton Bloom.`,
+            choices: [ { text: `She arrives.`, node: "part2_arrive" } ]
+          },
+          part2_arrive: {
+            part: "Part II: The Claiming",
+            text: `She stands before you in the foyer. More magnificent in person than any data point could capture. Her fear is a perfume. Her defiance, an aphrodisiac. "Welcome home, Peach," you say.`,
+            choices: [
+              { text: `She defies you. "I am not your Peach."`, node: "part2_defies" },
+              { text: `She is silent. A challenge in itself.`, node: "part2_is_silent" }
+            ]
+          },
+          part2_defies: {
+            part: "Part II: The Claiming",
+            text: `Her fire is exactly what the prophecy requires. "You are whatever the contract says you are," you tell her. "Your body will become an altar for Project Cotton Bloom." You must decide how to handle her defiance.`,
+            choices: [
+              { text: "Explain the stakes. Try to win her over.", node: "part3_explain" },
+              { text: "Assert your control. Break her will.", node: "part3_assert_control" }
+            ]
+          },
+          part2_is_silent: {
+            part: "Part II: The Claiming",
+            text: `You let her silence hang in the air. "The field is hungry," you say. "And you, Mina Sever, are the feast. Your body will bloom in ways you cannot imagine." You must choose your next move.`,
+            choices: [
+              { text: "Reveal the true mission. Make her an ally.", node: "part3_explain" },
+              { text: "Begin the indoctrination. She is a vessel.", node: "part3_assert_control" }
+            ]
+          },
+          part3_explain: {
+            part: "Part III: Transformation",
+            text: `You reveal the true threat: Commissioner Vasquez, who sees your power as a threat to be neutralized. You position yourself not as a captor, but as a protector. You offer Mina a partnership. Her reaction is uncertain, but she seems to be listening.`,
+            choices: [
+              { text: "Trust her. Give her more autonomy.", node: "end_happy" },
+              { text: "Your obsession makes you careless. You miss Vasquez's real threat.", node: "end_malachi_exposed" }
+            ]
+          },
+          part3_assert_control: {
+            part: "Part III: Transformation",
+            text: `You let the mask of the CEO drop, revealing the predator. You use the mansion's systems to begin her indoctrination, a psychological campaign to break her will and reshape her into the perfect vessel. She fights you at every turn, a beautiful, caged animal.`,
+            choices: [
+              { text: "Your cruelty pushes her away, into Vasquez's arms.", node: "end_malachi_exposed" },
+              { text: "Your absolute control works. She breaks, and you remake her.", node: "end_malachi_vessel" }
+            ]
+          },
+          end_happy: happyEnding,
+          end_malachi_exposed: { 
+            title: "Empire of Ash",
+            text: "Your obsession with Mina makes you careless. Whether through her betrayal or your own arrogance, you underestimate Commissioner Vasquez. She gathers enough evidence to expose Project Cotton Bloom to the world. Your empire collapses, and you are branded a monster—the man who kidnapped a 'fat white woman' to be his 'milk dairy cow and breeding vessel'. You lose everything.",
+            isEnd: true 
+          },
+          end_malachi_vessel: { 
+            title: "The Bitter Harvest",
+            text: "You succeed. Mina's will is broken, and she becomes the perfect, docile vessel for the prophecy. The transformation is a success, and the power you unlock is immense. But the woman you were obsessed with is gone, replaced by an empty shell. You have your goddess, but you have lost her soul. You are a king alone on a throne of empty victory.",
+            isEnd: true 
+          }
+        };
+      }
     }
 
     let STORY;
 
     function transition(hideEl, showEl, callback) {
-        hideEl.classList.add('out');
-        setTimeout(() => {
-            hideEl.classList.add('hidden');
-            hideEl.classList.remove('out');
-            showEl.classList.remove('hidden');
-            if (callback) callback();
-            const firstButton = showEl.querySelector('button, [href], input, select, textarea');
-            if (firstButton) firstButton.focus();
-        }, 700);
+      if (hideEl.id === 'play' && vignetteContainer) {
+        vignetteContainer.style.opacity = '0';
+      }
+      hideEl.classList.add('out');
+      setTimeout(() => {
+        hideEl.classList.add('hidden');
+        hideEl.classList.remove('out');
+        showEl.classList.remove('hidden');
+        if (callback) callback();
+        const firstButton = showEl.querySelector('button, [href], input, select, textarea');
+        if (firstButton) firstButton.focus();
+      }, 700);
     }
 
     function showCommunityBadge() {
-        const badge = EL('communityBadge');
-        if (badge) { // Error check
-            badge.style.opacity = '1';
-            setTimeout(() => { badge.style.opacity = '0'; }, 5000);
-        }
+      const badge = EL('communityBadge');
+      if (badge) {
+        badge.style.opacity = '1';
+        setTimeout(() => { badge.style.opacity = '0'; }, 5000);
+      }
     }
-    
     function showAchievementToast() {
-        const toast = EL('achievementToast');
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateY(0)';
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(0.75rem)';
-        }, 6000);
+      const toast = EL('achievementToast');
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(0.75rem)';
+      }, 6000);
+    }
+
+    function updateStats(changes) {
+      for (const key in changes) {
+        const value = changes[key];
+        if (typeof value === 'string' && (value.startsWith('+') || value.startsWith('-'))) {
+          gameState.stats[key] = (gameState.stats[key] || 0) + parseInt(value, 10);
+        } else {
+          gameState.stats[key] = value;
+        }
+      }
     }
 
     function showNode(name) {
@@ -385,35 +455,37 @@
       gameState.currentNode = name;
       localStorage.setItem(`${SAVE_KEY_PREFIX}_character`, gameState.character);
       localStorage.setItem(`${SAVE_KEY_PREFIX}_node`, name);
+      localStorage.setItem(`${SAVE_KEY_PREFIX}_stats`, JSON.stringify(gameState.stats));
+
 
       if (node.isEnd) {
-          localStorage.setItem(`${SAVE_KEY_PREFIX}_${gameState.character}_complete`, 'true');
-          const minaComplete = localStorage.getItem(`${SAVE_KEY_PREFIX}_mina_complete`) === 'true';
-          const malachiComplete = localStorage.getItem(`${SAVE_KEY_PREFIX}_malachi_complete`) === 'true';
-          const achievementShown = localStorage.getItem(`${SAVE_KEY_PREFIX}_achievement_shown`) === 'true';
-
-          if (minaComplete && malachiComplete && !achievementShown) {
-              showAchievementToast();
-              localStorage.setItem(`${SAVE_KEY_PREFIX}_achievement_shown`, 'true');
-          }
-          showEndScreen(node);
-          return;
+        localStorage.setItem(`${SAVE_KEY_PREFIX}_${gameState.character}_complete`, 'true');
+        const minaComplete = localStorage.getItem(`${SAVE_KEY_PREFIX}_mina_complete`) === 'true';
+        const malachiComplete = localStorage.getItem(`${SAVE_KEY_PREFIX}_malachi_complete`) === 'true';
+        const achievementShown = localStorage.getItem(`${SAVE_KEY_PREFIX}_achievement_shown`) === 'true';
+        if (minaComplete && malachiComplete && !achievementShown) {
+          showAchievementToast();
+          localStorage.setItem(`${SAVE_KEY_PREFIX}_achievement_shown`, 'true');
+        }
+        showEndScreen(node);
+        return;
       }
 
       partIndicator.textContent = node.part || "";
+
       storyBox.classList.add("out");
       choicesBox.classList.add("out");
       setTimeout(() => {
-        storyBox.textContent = node.text;
+        storyBox.textContent = typeof node.text === 'function' ? node.text(gameState.stats) : node.text;
         choicesBox.innerHTML = "";
 
         const quotes = CANON.quotes[gameState.character] || [];
         if (quotes.length > 0){
-            const idx = Math.floor(Math.random() * quotes.length);
-            whisperBox.textContent = `"${quotes[idx]}"`;
-            whisperBox.classList.remove("hidden");
+          const idx = Math.floor(Math.random() * quotes.length);
+          whisperBox.textContent = `"${quotes[idx]}"`;
+          whisperBox.classList.remove("hidden");
         } else {
-            whisperBox.classList.add("hidden");
+          whisperBox.classList.add("hidden");
         }
 
         node.choices.forEach((c) => {
@@ -421,7 +493,12 @@
           b.className = "choice-button text-white font-bold py-4 px-6 rounded-lg w-full text-left text-lg";
           b.setAttribute('role','listitem');
           b.textContent = c.text;
-          b.onclick = () => showNode(c.node);
+          b.onclick = () => {
+            if (c.setStats) {
+              updateStats(c.setStats);
+            }
+            showNode(c.node);
+          };
           choicesBox.appendChild(b);
         });
         storyBox.classList.remove("out");
@@ -432,69 +509,73 @@
     }
 
     function showEndScreen(node) {
-        endTitle.textContent = node.title || "The Story Continues";
-        endText.textContent = node.text;
-        // The happy ending for Malachi is Mina's happy ending.
-        if(gameState.character === 'malachi' && node.isEnd && !node.title){
-            const happyNode = STORY['end_happy'];
-            endTitle.textContent = happyNode.title;
-            endText.textContent = happyNode.text;
-        }
-        transition(play, endScreen);
+      endTitle.textContent = node.title || "The Story Continues";
+      endText.textContent = node.text;
+      transition(play, endScreen);
     }
 
     function startGame() {
-        STORY = makeStory(gameState.character);
-        transition(characterSelect, play, () => {
-            showCommunityBadge();
-            showNode('start');
-        });
+      STORY = makeStory(gameState.character);
+      if (vignetteContainer) {
+        vignetteContainer.innerHTML = VIGNETTES[gameState.character] || '';
+      }
+      transition(characterSelect, play, () => {
+        showCommunityBadge();
+        if (vignetteContainer) {
+            setTimeout(() => { vignetteContainer.style.opacity = '0.25'; }, 500);
+        }
+        showNode('start');
+      });
     }
 
     function resetGame() {
-        localStorage.removeItem(`${SAVE_KEY_PREFIX}_node`);
-        localStorage.removeItem(`${SAVE_KEY_PREFIX}_character`);
-        transition(endScreen, intro);
+      localStorage.removeItem(`${SAVE_KEY_PREFIX}_node`);
+      localStorage.removeItem(`${SAVE_KEY_PREFIX}_character`);
+      localStorage.removeItem(`${SAVE_KEY_PREFIX}_stats`);
+      gameState.stats = { defiance: 0 }; // Reset in-memory stats too
+      transition(endScreen, intro);
     }
 
     function toggleSubredditLinks(isConsented) {
-        introSubredditLink.classList.toggle('hidden', !isConsented);
-        endSubredditBox.classList.toggle('hidden', !isConsented);
+      const introSub = document.getElementById('introSubredditLink');
+      const endBox = document.getElementById('endSubredditBox');
+      if (introSub) introSub.classList.toggle('hidden', !isConsented);
+      if (endBox) endBox.classList.toggle('hidden', !isConsented);
     }
     
     function handleConsent() {
-        const isConsented = consent.checked;
-        if (isConsented) {
-            localStorage.setItem(`${SAVE_KEY_PREFIX}_consent`, "1");
-            localStorage.setItem(`${SAVE_KEY_PREFIX}_spice`, String(Number(spice.value||1)));
-            gate.style.opacity = '0';
-            setTimeout(() => {
-                gate.style.display = 'none';
-                intro.classList.remove('hidden');
-                intro.querySelector('button').focus();
-            }, 500);
-        }
-        toggleSubredditLinks(isConsented);
+      const isConsented = consent.checked;
+      if (isConsented) {
+        localStorage.setItem(`${SAVE_KEY_PREFIX}_consent`, "1");
+        localStorage.setItem(`${SAVE_KEY_PREFIX}_spice`, String(Number(spice.value||1)));
+        gate.style.opacity = '0';
+        setTimeout(() => {
+          gate.style.display = 'none';
+          intro.classList.remove('hidden');
+          const first = intro.querySelector('button, [href]');
+          if (first) first.focus();
+        }, 500);
+      }
+      toggleSubredditLinks(isConsented);
     }
 
+    // Events
     btnNew.addEventListener("click", () => transition(intro, characterSelect));
     btnMina.addEventListener("click", () => { gameState.character = 'mina'; startGame(); });
     btnMalachi.addEventListener("click", () => { gameState.character = 'malachi'; startGame(); });
     btnRestart.addEventListener("click", resetGame);
-    
-    // Gate and settings logic
-    let lastFocusedBeforeSettings = null;
-    function openSettings(){
-        lastFocusedBeforeSettings = document.activeElement;
-        gate.querySelector('#gateTitle').textContent = 'Settings';
-        gate.querySelector('#gateDesc').textContent = 'Adjust your experience.';
-        gate.querySelector('#gateEnter').textContent = 'Done';
-        gate.style.display = 'grid';
-        setTimeout(()=> gate.style.opacity = '1', 10);
-        gate.querySelector('#consent').focus();
-    }
 
-    btnSettings.addEventListener("click", openSettings);
+    // Gate as Settings
+    function openSettings(){
+      gate.querySelector('#gateTitle').textContent = 'Settings';
+      gate.querySelector('#gateDesc').textContent = 'Adjust your experience.';
+      gate.querySelector('#gateEnter').textContent = 'Done';
+      gate.style.display = 'grid';
+      setTimeout(()=> gate.style.opacity = '1', 10);
+      consent.focus();
+    }
+    
+    if (btnSettings) btnSettings.addEventListener("click", openSettings);
     gateEnter.addEventListener("click", handleConsent);
     consent.addEventListener("change", ()=> { gateEnter.disabled = !consent.checked; });
     spice.addEventListener("input", ()=> { spiceLabel.textContent = labelForSpice(spice.value); });
@@ -503,25 +584,33 @@
     (function init(){
       const isConsented = !!localStorage.getItem(`${SAVE_KEY_PREFIX}_consent`);
       toggleSubredditLinks(isConsented);
-      
       if (!isConsented) {
-          intro.classList.add('hidden');
-          gate.style.display = 'grid';
+        intro.classList.add('hidden');
+        gate.style.display = 'grid';
       } else {
-          gate.style.display = 'none';
-          intro.classList.remove('hidden');
+        gate.style.display = 'none';
+        intro.classList.remove('hidden');
       }
 
       const savedChar = localStorage.getItem(`${SAVE_KEY_PREFIX}_character`);
       const savedNode = localStorage.getItem(`${SAVE_KEY_PREFIX}_node`);
+      const savedStats = localStorage.getItem(`${SAVE_KEY_PREFIX}_stats`);
+
       if (isConsented && savedChar && savedNode) {
         const storyForChar = makeStory(savedChar);
-        if(storyForChar[savedNode] && !storyForChar[savedNode].isEnd) {
-            gameState.character = savedChar;
-            STORY = storyForChar;
-            intro.classList.add('hidden');
-            play.classList.remove('hidden');
-            showNode(savedNode);
+        if (storyForChar[savedNode] && !storyForChar[savedNode].isEnd) {
+          gameState.character = savedChar;
+          if (savedStats) {
+            gameState.stats = JSON.parse(savedStats);
+          }
+          STORY = storyForChar;
+          if (vignetteContainer) {
+            vignetteContainer.innerHTML = VIGNETTES[gameState.character] || '';
+            vignetteContainer.style.opacity = '0.25';
+          }
+          intro.classList.add('hidden');
+          play.classList.remove('hidden');
+          showNode(savedNode);
         }
       }
     })();
